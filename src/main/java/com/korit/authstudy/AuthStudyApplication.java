@@ -14,5 +14,5 @@ public class AuthStudyApplication {
 
 
 /*
-     
+    금일 수업 내용 순서 작동 원리 IoC 제대로 파악하기
 */
