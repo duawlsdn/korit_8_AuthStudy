@@ -16,6 +16,10 @@ public class UserRegisterDto {
     public User toEntity (BCryptPasswordEncoder passwordEncoder) {
         return User.builder()
                 .username(username)
+                // passwordEncoder.encode() 같은 경우 passwordEncoder를 config 에서 @Bean 으로 등록을 하고
+                // service 에서 @RequiredArgsConstructor 로 매개변수로 사용되고
+                // return 되는 dto.toEntity()에 매개변수로 passwordEncoder 를 넣어야지만
+                // Dto 내에서 아래와 같이 정의하고 사용가능!
                 .password(passwordEncoder.encode(password))
                 .fullName(fullName)
                 .email(email)
