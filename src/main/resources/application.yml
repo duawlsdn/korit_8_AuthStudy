@@ -18,3 +18,7 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
   type-aliases-package: com.korit.authstudy.mapper.dto
+
+
+jwt:
+  secret:
