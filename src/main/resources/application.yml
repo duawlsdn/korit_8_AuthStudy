@@ -21,4 +21,4 @@ mybatis:
 
 
 jwt:
-  secret:
+  secret: 3dd34cd332ac105f1ef8526a7c83a3bf901a8662d28bf2e885a6cdd75761b11d
