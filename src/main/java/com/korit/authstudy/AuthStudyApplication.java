@@ -58,6 +58,4 @@ public class AuthStudyApplication {
     4. Dto 설계
     5. Service 설계
     6. Repository 설계
-
-    파악실패
 */
