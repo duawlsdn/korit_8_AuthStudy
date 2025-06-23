@@ -10,7 +10,6 @@ import io.swagger.v3.oas.models.PathItem;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -61,6 +60,8 @@ public class JwtAuthenticationFilter implements Filter {
                                     .userId(user.getId())
                                     .username(user.getUsername())
                                     .password(user.getPassword())
+                                    .fullName(user.getFullName())
+                                    .email(user.getEmail())
                                     .build();
                             Authentication authentication = new UsernamePasswordAuthenticationToken(principalUser,"", principalUser.getAuthorities());
                             SecurityContextHolder.getContext().setAuthentication(authentication);

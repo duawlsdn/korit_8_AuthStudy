@@ -1,11 +1,12 @@
 package com.korit.authstudy.service;
 
 import com.korit.authstudy.domain.entity.User;
-import com.korit.authstudy.dto.JwtDto;
-import com.korit.authstudy.dto.LoginDto;
-import com.korit.authstudy.dto.UserRegisterDto;
+import com.korit.authstudy.dto.*;
+import com.korit.authstudy.mapper.UsersMapper;
 import com.korit.authstudy.repository.UsersRepository;
 import com.korit.authstudy.security.jwt.JwtUtil;
+import com.korit.authstudy.security.model.PrincipalUser;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,6 +21,7 @@ public class UsersService {
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final UsersRepository usersRepository;
+    private final UsersMapper usersMapper;
     private final JwtUtil jwtUtil;
 
     public User register(UserRegisterDto dto) {
@@ -42,4 +44,31 @@ public class UsersService {
         // user.getId()를 할 경우 Integer 이기 때문에 .toString() 하여 문자열로 변경
         return JwtDto.builder().accessToken(token).build();
     }
+
+    @Transactional(rollbackOn = Exception.class)
+    public void modifyFullNameOrEmail (Integer userId, UserModifyDto dto) {
+        User user = dto.toEntity(userId);   // UserModifyDto 를 Entity 형태로 변환
+//        usersRepository.save();             // .save id가 있다면 update , 없다면 insert
+//        int updateCount = usersRepository.updateFullNameOrEmailById(user);    // JPQL로 생성
+        int updateCount = usersMapper.updateFullNameOrEmailById(user);          // Mybatis로 생성
+        System.out.println(updateCount);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public void modifyPassword (UserPasswordModifyDto dto, PrincipalUser principalUser) {
+        // 1. 현재 로그인 되어있는 비밀번호와 요청때 받은 현재 비밀번호가 일치하는지 확인
+        if (!passwordEncoder.matches(dto.getOldPassword(), principalUser.getPassword())) {
+            throw new BadCredentialsException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 2. 새 비밀번호와 새 비밀번호 확인이 일치하는지
+        if (!dto.getNewPassword().equals(dto.getNewPasswordCheck())) {
+            throw new BadCredentialsException("새 비밀번호가 일치하지 앗습니다.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(dto.getNewPassword());
+
+        usersMapper.updatePassword(principalUser.getUserId(), encodedPassword);
+    }
+
 }
